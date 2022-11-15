@@ -10,14 +10,14 @@ from multiprocessing import Pool
 _num_worker = 8
 
 # data path
-dataroot = '/home/liyachun/data/audio2bs'
-wav_path = os.path.join(dataroot, 'sandbox/wav/')
-feature_path = os.path.join(dataroot, 'sandbox/feature-lpc-mp/')
+dataroot = '../data'
+wav_path = os.path.join(dataroot, 'wav/')
+feature_path = os.path.join(dataroot, 'feature-lpc/')
 if not os.path.isdir(feature_path): os.mkdir(feature_path)
 
 def audio_lpc(wav_file, feature_file):
     (rate, sig) = wav.read(wav_file)
-    print(rate)
+    # print(rate)
 
     videorate = 30
     nw = int(rate/videorate) # time
@@ -68,29 +68,29 @@ def audio_lpc(wav_file, feature_file):
     #
     #     if i > 0 and i % 10 == 0:
     #         pbar.update(10)
-    filt_coef = pool.map(lpc_K, tqdm(frame))
+    filt_coef = pool.map(lpc_K, frame)
     lpc_feature[:] = filt_coef
 
     # pbar.close()
-    print(type(lpc_feature), lpc_feature.shape)
+    # print(type(lpc_feature), lpc_feature.shape)
 
     for win in range(win_count):
         output[win] = lpc_feature[2*win : 2*win+win_size]
 
     np.save(feature_file, output)
-    print("LPC extraction finished {}".format(output.shape))
+    # print("LPC extraction finished {}".format(output.shape))
 
 def lpc_K(frame, order=32):
     filt = lpc.nautocor(frame, order=order)
     return filt.numerator[1:] # List of coefficients
 
 def main():
-    wav_files = os.listdir(wav_path)
-    print(wav_files)
-    for wav_file in wav_files:
+    wav_files = sorted(os.listdir(wav_path))
+    # print(wav_files)
+    for wav_file in tqdm(wav_files):
         feature_file = wav_file.split('.')[0] + '-lpc' + '.npy'
-        print('-------------------\n', feature_file)
-        audio_lpc(wav_path+wav_file, feature_path+feature_file)
+        # print('-------------------\n', feature_file)
+        audio_lpc(wav_path + wav_file, feature_path + feature_file)
 
 if __name__ == '__main__':
     main()

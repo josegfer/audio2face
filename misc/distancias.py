@@ -8,7 +8,7 @@ import sys
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
-from hparams import ds
+from hparams import ds, threshold_x, threshold_y
 
 data_path = 'data'
 
@@ -18,8 +18,6 @@ target_file = os.path.join('..', data_path, '{}_blendshape.txt'.format(ds))
 X = np.load(feature_file)
 y = np.loadtxt(target_file)
 
-threshold_x = 50
-threshold_y = 0.6
 N = X.shape[0]
 
 indices = np.zeros(N)

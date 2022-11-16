@@ -33,7 +33,7 @@ checkpoint_path = './{}/'.format(ds)
 result_path = './output/'
 if not os.path.isdir(result_path): os.mkdir(result_path)
 
-result_file = '{}_hat.txt'
+result_file = '{}_hat.txt'.format(ds)
 
 if args.epoch != None:
     ckp = 'checkpoint-epoch'+str(args.epoch)+'.pth.tar'

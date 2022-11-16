@@ -52,7 +52,7 @@ def main():
     # get data
     train_loader = torch.utils.data.DataLoader(
         BlendshapeDataset(feature_file = os.path.join(data_path, '{}_feature-lpc.npy'.format(ds)), 
-                          target_file = os.path.join(data_path, '{}_blendshape_resample.txt'.format(ds))), 
+                          target_file = os.path.join(data_path, '{}_blendshape.txt'.format(ds))), 
         batch_size = batch_size, shuffle = True, num_workers = 0)
     val_loader = torch.utils.data.DataLoader(
         BlendshapeDataset(feature_file = os.path.join(data_path, '{}_feature-lpc_test.npy'.format(ds)), 

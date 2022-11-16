@@ -20,8 +20,8 @@ def audio_lpc(wav_file, feature_file):
     # print(rate)
 
     videorate = 30
-    nw = int(rate/videorate) # time
-    inc = int(nw/2) # 2* overlap
+    nw = rate / videorate # time
+    inc = nw / 2 # 2* overlap
     # assert type(inc) == int
     winfunc = np.hanning(nw)
 
@@ -41,6 +41,8 @@ def audio_lpc(wav_file, feature_file):
         zeros=np.zeros((pad_length-signal_length,)) #
         pad_signal=np.concatenate((signal,zeros)) #after padding
         #nf*nw matrix
+        nw = int(nw)
+        inc = int(inc)
         indices=np.tile(np.arange(0,nw),(nf,1))+np.tile(np.arange(0,nf*inc,inc),(nw,1)).T
         indices=np.array(indices,dtype=np.int32) #turn indices to frames
         frames=pad_signal[indices] #get frames

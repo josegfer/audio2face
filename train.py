@@ -115,8 +115,8 @@ def main():
         with torch.no_grad():
             for input, target in val_loader:
                 target = target.cuda(non_blocking = True)
-                input_var = autograd.Variable(input.float(), volatile=True).cuda()
-                target_var = autograd.Variable(target.float(), volatile=True)
+                input_var = autograd.Variable(input.float()).cuda()
+                target_var = autograd.Variable(target.float())
     
                 # compute output temporal?!!
                 # audio_z, bs_z, output = model(input_var, target_var)

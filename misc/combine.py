@@ -101,12 +101,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# feature_files = sorted(os.listdir(feature_path))
-# blendshape_files = sorted(os.listdir(target_path))
-
-# i = 60
-
-# feature = np.load(feature_path+feature_files[i])
-# blendshape = loadjson(target_path + blendshape_files[i])
-# blendshape = cut(feature, blendshape)

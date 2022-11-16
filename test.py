@@ -31,6 +31,7 @@ data_path = dataroot
 # data_path = './data/test/'
 checkpoint_path = './{}/'.format(ds)
 result_path = './output/'
+if not os.path.isdir(result_path): os.mkdir(result_path)
 
 result_file = '{}_hat.txt'
 

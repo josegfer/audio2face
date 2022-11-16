@@ -14,7 +14,7 @@ dataroot = '../data'
 feature_path = os.path.join(dataroot, 'feature-lpc/')
 target_path = os.path.join(dataroot, 'blendshape/')
 
-test_ind = pd.read_csv('../data/test_ind.csv', header = None).squeeze().tolist() # audio2face/data/blendshape$ ls rule* > ../test_ind.csv
+test_ind = pd.read_csv('../data/test_ind.csv', header = None).squeeze('columns').tolist() # audio2face/data/blendshape$ ls rule* > ../test_ind.csv
 
 def combine(feature_path, target_path):
     feature_files = sorted(os.listdir(feature_path))

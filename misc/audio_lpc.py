@@ -87,11 +87,11 @@ def lpc_K(frame, order=32):
     return filt.numerator[1:] # List of coefficients
 
 def main():
-    wav_files = sorted(os.listdir(wav_path))
+    wav_files = os.listdir(wav_path)
     # print(wav_files)
     
-    lpc_files = sorted(os.listdir(feature_path))
-    remaining = list(set(wav_files) - set([file[:-8] + '.wav' for file in lpc_files])) # len('-lpc' + '.npy') = 8
+    lpc_files = os.listdir(feature_path)
+    remaining = sorted(list(set(wav_files) - set([file[:-8] + '.wav' for file in lpc_files]))) # len('-lpc' + '.npy') = 8
     for wav_file in tqdm(remaining):
         feature_file = wav_file.split('.')[0] + '-lpc' + '.npy'
         # print('-------------------\n', feature_file)

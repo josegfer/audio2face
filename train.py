@@ -25,8 +25,8 @@ parser.add_argument('--ckp', type = str, default = None)
 args = parser.parse_args()
 
 # gpu setting
-gpu_id = 1
-os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
+# gpu_id = 1
+# os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
 
 # hyper-parameters
 learning_rate = 0.0001
@@ -95,7 +95,7 @@ def main():
             output = model(input_var)
             loss = criterion(output, target_var)
 
-            train_loss += loss.data[0] * 100 # print decimals
+            train_loss += loss * 100 # print decimals
 
             # compute gradient and do the backpropagate
             optimizer.zero_grad()
@@ -126,7 +126,7 @@ def main():
                 output = model(input_var)
                 loss = criterion(output, target_var)
     
-                eval_loss += loss.data[0] * 100
+                eval_loss += loss * 100
 
         eval_loss /= len(val_loader)
 

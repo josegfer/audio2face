@@ -23,10 +23,12 @@ def combine(feature_path, target_path):
     blendshape_files = sorted(os.listdir(target_path))
     # print('bs:      ', blendshape_files)
 
-    feature = np.array([], dtype = np.float64).reshape(0, win_size, K) # [frames x win_size x K] from lpc
+    # feature = np.array([], dtype = np.float64).reshape(0, win_size, K) # [frames x win_size x K] from lpc
+    feature = []
     feature_combine_file = ds + '_' + feature_path.split('/')[-2] + '.npy'
 
-    blendshape = np.array([], dtype = np.float64).reshape(0, n_blendshape) # [frames x n_blendshape]
+    # blendshape = np.array([], dtype = np.float64).reshape(0, n_blendshape) # [frames x n_blendshape]
+    blendshape = []
     blendshape_combine_file = ds + '_' + target_path.split('/')[-2] + '.txt'
 
     for i in tqdm(range(len(feature_files))):
@@ -35,16 +37,20 @@ def combine(feature_path, target_path):
             continue
 
         feature_temp = np.load(feature_path+feature_files[i])
-        feature = np.concatenate((feature, feature_temp), 0)
+        # feature = np.concatenate((feature, feature_temp), 0)
+        feature.append(feature_temp)
 
         # blendshape is shorter, need cut
         blendshape_temp = loadjson(target_path + blendshape_files[i])
         blendshape_temp = cut(feature_temp, blendshape_temp)
-
-        blendshape = np.concatenate((blendshape, blendshape_temp), 0)
+        # blendshape = np.concatenate((blendshape, blendshape_temp), 0)
+        blendshape.append(blendshape_temp)
 
         # print(i, blendshape_files[i], feature.shape, blendshape.shape)
 
+    feature = np.concatenate(feature, axis = 0)
+    blendshape = np.concatenate(blendshape, axis = 0)
+    
     np.save(os.path.join(dataroot, feature_combine_file), feature)
     np.savetxt(os.path.join(dataroot, blendshape_combine_file), blendshape, fmt='%.8f')
 

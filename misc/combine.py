@@ -15,8 +15,12 @@ feature_path = os.path.join(dataroot, 'feature-lpc/')
 target_path = os.path.join(dataroot, 'blendshape/')
 
 test_ind = pd.read_csv('../data/test_ind.csv', header = None).squeeze('columns').tolist() # audio2face/data/blendshape$ ls rule* > ../test_ind.csv
+val_ind = pd.read_csv('../data/val_ind.csv', header = None).squeeze('columns').tolist() # audio2face/data/blendshape$ ls rule* > ../val_ind.csv
 
-def combine(feature_path, target_path):
+def combine(feature_path, target_path, conjunto = 'train'):
+    sets = {'train', 'val', 'test'}
+    assert conjunto in sets
+    
     feature_files = sorted(os.listdir(feature_path))
     # print('feature: ', feature_files)
 
@@ -25,16 +29,25 @@ def combine(feature_path, target_path):
 
     # feature = np.array([], dtype = np.float64).reshape(0, win_size, K) # [frames x win_size x K] from lpc
     feature = []
-    feature_combine_file = ds + '_' + feature_path.split('/')[-2] + '.npy'
+    # feature_combine_file = ds + '_' + feature_path.split('/')[-2] + '.npy'
+    feature_combine_file = '{}_{}_{}.npy'.format(ds, feature_path.split('/')[-2], conjunto)
 
     # blendshape = np.array([], dtype = np.float64).reshape(0, n_blendshape) # [frames x n_blendshape]
     blendshape = []
     blendshape_combine_file = ds + '_' + target_path.split('/')[-2] + '.txt'
+    blendshape_combine_file = '{}_{}_{}.txt'.format(ds, target_path.split('/')[-2], conjunto)
 
     for i in tqdm(range(len(feature_files))):
         # skip test files
-        if blendshape_files[i] in test_ind:
-            continue
+        if conjunto == 'train':
+            if blendshape_files[i] in test_ind or blendshape_files[i] in val_ind:
+                continue
+        elif conjunto == 'val':
+            if blendshape_files[i] in test_ind or blendshape_files[i] not in val_ind:
+                continue
+        else:
+            if blendshape_files[i] not in test_ind or blendshape_files[i] in val_ind:
+                continue
 
         feature_temp = np.load(feature_path+feature_files[i])
         # feature = np.concatenate((feature, feature_temp), 0)
@@ -69,41 +82,10 @@ def loadjson(blendshape_file):
     f.close()
     return np.array(data['weightMat'])
 
-def combine_test(feature_path, target_path):
-    feature_files = sorted(os.listdir(feature_path))
-    # print('feature: ', feature_files)
-
-    blendshape_files = sorted(os.listdir(target_path))
-    # print('bs:      ', blendshape_files)
-
-    feature = np.array([], dtype = np.float64).reshape(0, win_size, K) # [frames x win_size x K] from lpc
-    feature_combine_file = ds + '_' + feature_path.split('/')[-2] + '_test.npy'
-
-    blendshape = np.array([], dtype = np.float64).reshape(0, n_blendshape) # [frames x n_blendshape]
-    blendshape_combine_file = ds + '_' + target_path.split('/')[-2] + '_test.txt'
-
-    for i in tqdm(range(len(feature_files))):
-        # skip test files
-        if blendshape_files[i] not in test_ind:
-            continue
-
-        feature_temp = np.load(feature_path+feature_files[i])
-        feature = np.concatenate((feature, feature_temp), 0)
-
-        # blendshape is shorter, need cut
-        blendshape_temp = loadjson(target_path + blendshape_files[i])
-        blendshape_temp = cut(feature_temp, blendshape_temp)
-
-        blendshape = np.concatenate((blendshape, blendshape_temp), 0)
-
-        # print(i, blendshape_files[i], feature.shape, blendshape.shape)
-
-    np.save(os.path.join(dataroot, feature_combine_file), feature)
-    np.savetxt(os.path.join(dataroot, blendshape_combine_file), blendshape, fmt='%.8f')
-
 def main():
-    combine(feature_path, target_path)
-    combine_test(feature_path, target_path)
+    combine(feature_path, target_path, conjunto = 'train')
+    combine(feature_path, target_path, conjunto = 'val')
+    combine(feature_path, target_path, conjunto = 'test')
 
 if __name__ == '__main__':
     main()

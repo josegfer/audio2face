@@ -31,7 +31,7 @@ args = parser.parse_args()
 # hyper-parameters
 learning_rate = 0.0001
 batch_size = 256
-epochs = 500
+epochs = 2000
 
 print_freq = 20
 best_loss = 10000000

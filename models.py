@@ -202,11 +202,19 @@ class LSTMNvidiaNet(nn.Module):
             nn.Linear(150, self.num_blendshapes)
         )
 
+    def embedding(self, x):
+        e_state, _ = self.emotion(x[:, ::2])
+        e_state = self.dense(e_state[:, -1, :])
+        e_state = e_state.view(-1, self.num_emotions, 1, 1)
+
+        return e_state
+
     def forward(self, x):
         # extract emotion state
-        e_state, _ = self.emotion(x[:, ::2]) # input features are 2* overlapping
-        e_state = self.dense(e_state[:, -1, :]) # last
-        e_state = e_state.view(-1, self.num_emotions, 1, 1)
+        # e_state, _ = self.emotion(x[:, ::2]) # input features are 2* overlapping
+        # e_state = self.dense(e_state[:, -1, :]) # last
+        # e_state = e_state.view(-1, self.num_emotions, 1, 1)
+        e_state = self.embedding(x)
 
         x = torch.unsqueeze(x, dim=1)
         # convolution

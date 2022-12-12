@@ -6,6 +6,7 @@ import torch
 import torch.autograd as autograd
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 
 import os
 import shutil
@@ -31,7 +32,7 @@ args = parser.parse_args()
 # hyper-parameters
 learning_rate = 0.0001
 batch_size = 256
-epochs = 2000
+epochs = 1000
 
 print_freq = 20
 best_loss = 10000000
@@ -42,6 +43,14 @@ dataroot = 'data'
 data_path = dataroot
 checkpoint_path = './{}/'.format(ds)
 if not os.path.isdir(checkpoint_path): os.mkdir(checkpoint_path)
+
+def loss_function(y_hat, y, e):
+    # position term
+    P = F.mse_loss(y_hat, y)
+    # regularization term
+    R = torch.pow(e, 2).sum()
+
+    return P + R
 
 def main():
     global best_loss
@@ -93,7 +102,12 @@ def main():
             # audio_z, bs_z, output, mu, logvar = model(input_var, target_var) # method2: loss change
             # loss = loss_function(output, target_var, mu, logvar)
             output = model(input_var)
-            loss = criterion(output, target_var)
+            # loss = criterion(output, target_var)
+            # e_state, _ = model.emotion(input_var[:, ::2])
+            # e_state = model.dense(e_state[:, -1, :])
+            # e_state = e_state.view(-1, 16, 1, 1)
+            e_state = model.embedding(input_var)
+            loss = loss_function(output, target_var, e_state)
 
             train_loss += loss * 100 # print decimals
 

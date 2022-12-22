@@ -16,7 +16,7 @@ from datetime import datetime
 from dataset import BlendshapeDataset
 from models import LSTMNvidiaNet
 
-from hparams import ds, n_blendshape
+from hparams import ds, n_blendshape, beta, v_0p, v_0r
 
 import argparse
 
@@ -50,7 +50,11 @@ def loss_function(y_hat, y, e):
     # regularization term
     R = torch.pow(e, 2).sum()
 
-    return P + R
+    return P, R
+
+def momentum(L, v_0):
+    v = beta * v_0 + (1 - beta) * L
+    return L * v, v
 
 def main():
     global best_loss
@@ -107,7 +111,12 @@ def main():
             # e_state = model.dense(e_state[:, -1, :])
             # e_state = e_state.view(-1, 16, 1, 1)
             e_state = model.embedding(input_var)
-            loss = loss_function(output, target_var, e_state)
+            # loss = loss_function(output, target_var, e_state)
+            P, R = loss_function(output, target_var, e_state)
+            P, v_0p = momentum(P, v_0p)
+            R, v_0r = momentum(R, v_0r)
+            loss = P + R
+
 
             train_loss += loss * 100 # print decimals
 

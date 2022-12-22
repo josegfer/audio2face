@@ -15,3 +15,7 @@ threshold_x = 50
 threshold_y = 0.6
 eta = 0.1
 n = 5
+
+beta = 0.3
+v_0p = 0
+v_0r = 0
